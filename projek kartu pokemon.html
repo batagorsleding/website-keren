@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokéVault Store | Toko Kartu Pokémon Resmi & Langka</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        poke: {
+                            yellow: '#FFCB05',
+                            blue: '#2A75BB',
+                            darkBlue: '#3C5AA6',
+                            red: '#EE1515',
+                            dark: '#0B0F19',
+                            card: '#151D2A',
+                            accent: '#1E293B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Glowing and Animation Effects */
+        .glow-yellow {
+            box-shadow: 0 0 20px rgba(255, 203, 5, 0.35);
+        }
+        .glow-rare {
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.5);
+        }
+        .glow-crown {
+            box-shadow: 0 0 30px rgba(234, 179, 8, 0.6);
+        }
+        .card-foil {
+            position: relative;
+            overflow: hidden;
+        }
+        .card-foil::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                115deg,
+                transparent 20%,
+                rgba(255, 255, 255, 0.1) 40%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0.1) 60%,
+                transparent 80%
+            );
+            transform: rotate(25deg) translateY(-100%);
+            transition: transform 0.75s ease-in-out;
+            pointer-events: none;
+        }
+        .card-foil:hover::before {
+            transform: rotate(25deg) translateY(100%);
+        }
+        /* Hide Scrollbar for clean aesthetics */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-poke-dark text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-poke-yellow selection:text-black">
+
+    <!-- HEADER / NAVBAR -->
+    <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20 gap-4">
+                
+                <!-- Logo -->
+                <a href="#home" class="flex items-center gap-3 group shrink-0">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-poke-yellow to-amber-500 flex items-center justify-center text-slate-950 font-extrabold text-xl shadow-lg group-hover:scale-105 transition-transform">
+                        ⚡
+                    </div>
+                    <div>
+                        <span class="text-2xl font-black tracking-wider bg-gradient-to-r from-poke-yellow via-amber-300 to-poke-blue bg-clip-text text-transparent">
+                            PokéVault
+                        </span>
+                        <span class="text-xs block font-bold text-slate-400 tracking-widest -mt-1 uppercase">STORE</span>
+                    </div>
+                </a>
+
+                <!-- Search Bar (Desktop) -->
+                <div class="hidden md:flex flex-1 max-w-md mx-4">
+                    <div class="relative w-full">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cari nama Pokémon (contoh: Charizard, Rayquaza)..." 
+                            class="w-full bg-slate-800/80 border border-slate-700 text-sm rounded-full pl-10 pr-4 py-2.5 text-slate-100 placeholder-slate-400 focus:outline-none focus:border-poke-yellow focus:ring-1 focus:ring-poke-yellow transition-all">
+                    </div>
+                </div>
+
+                <!-- Navigation Links & Actions -->
+                <div class="flex items-center gap-3 lg:gap-5">
+                    <nav class="hidden lg:flex items-center gap-6 text-sm font-semibold text-slate-300">
+                        <a href="#katalog" class="hover:text-poke-yellow transition-colors">Katalog</a>
+                        <a href="#filter-section" class="hover:text-poke-yellow transition-colors">Kelangkaan</a>
+                        <a href="#sumber" class="hover:text-poke-yellow transition-colors">Sumber Data</a>
+                    </nav>
+
+                    <!-- Cart Button -->
+                    <button onclick="toggleCartDrawer()" class="relative bg-slate-800 hover:bg-slate-700 border border-slate-700 p-2.5 sm:px-4 sm:py-2.5 rounded-full flex items-center gap-2.5 transition-all text-slate-200 hover:text-white" title="Keranjang Belanja">
+                        <i class="fa-solid fa-bag-shopping text-poke-yellow text-lg"></i>
+                        <span class="hidden sm:inline text-xs font-bold uppercase tracking-wider">Keranjang</span>
+                        <span id="cartBadge" class="bg-poke-red text-white text-xs font-extrabold w-5 h-5 rounded-full flex items-center justify-center shadow-md">0</span>
+                    </button>
+
+                    <!-- Auth Button / User Profile -->
+                    <div id="authContainer">
+                        <button onclick="openAuthModal('login')" class="bg-gradient-to-r from-poke-yellow to-amber-500 hover:from-amber-400 hover:to-amber-600 text-slate-950 font-extrabold text-xs sm:text-sm px-4 py-2.5 rounded-full shadow-lg hover:shadow-yellow-500/20 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-user-check"></i>
+                            <span>Masuk / Daftar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Search Bar -->
+            <div class="pb-3 md:hidden">
+                <div class="relative w-full">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="searchInputMobile" oninput="handleSearchMobile()" placeholder="Cari nama Pokémon..." 
+                        class="w-full bg-slate-800 border border-slate-700 text-sm rounded-full pl-10 pr-4 py-2 text-slate-100 placeholder-slate-400 focus:outline-none focus:border-poke-yellow">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO BANNER -->
+    <section id="home" class="relative bg-gradient-to-b from-slate-900 via-poke-dark to-poke-dark py-12 lg:py-16 overflow-hidden border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-7 text-center lg:text-left">
+                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-poke-yellow text-xs font-bold uppercase tracking-widest mb-4">
+                        <i class="fa-solid fa-sparkles text-amber-400"></i> Tempatnya Kolektor Kartu Resmi
+                    </span>
+                    <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
+                        Koleksi <span class="bg-gradient-to-r from-poke-yellow via-amber-300 to-amber-500 bg-clip-text text-transparent">Kartu Pokémon</span> Langka & Asli.
+                    </h1>
+                    <p class="mt-4 text-slate-400 text-base sm:text-lg max-width-xl mx-auto lg:mx-0">
+                        Beli kartu fisikal resmi Pokémon TCG terlangka secara online. Mulai dari edisi klasik *Base Set*, *EX*, *VMAX*, hingga *Crown Rare* dengan jaminan keaslian 100%.
+                    </p>
+                    <div class="mt-8 flex flex-wrap gap-4 justify-center lg:justify-start">
+                        <a href="#katalog" class="bg-poke-yellow hover:bg-amber-400 text-slate-950 px-7 py-3.5 rounded-xl font-extrabold text-sm shadow-lg shadow-yellow-500/10 hover:shadow-yellow-500/25 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-store"></i> Jelajahi Toko
+                        </a>
+                        <a href="#filter-section" class="bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 px-6 py-3.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-filter text-poke-yellow"></i> Filter Kelangkaan
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Featured Hero Cards Showcase -->
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="relative w-72 sm:w-80">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-poke-yellow to-purple-600 rounded-3xl blur-xl opacity-30 animate-pulse"></div>
+                        <div class="relative bg-slate-900 border border-slate-700 rounded-2xl p-4 shadow-2xl">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-crown mr-1"></i> Kartu Terpopuler</span>
+                                <span class="text-xs font-extrabold bg-poke-red text-white px-2 py-0.5 rounded">EX / VMAX</span>
+                            </div>
+                            <img src="https://images.pokemontcg.io/swsh4/25_hires.png" alt="Pikachu VMAX" class="w-full h-auto rounded-xl shadow-md border border-slate-800">
+                            <div class="mt-4 flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-black text-white text-lg">Pikachu VMAX</h4>
+                                    <p class="text-xs text-slate-400">Secret Rare • Secret Vivid</p>
+                                </div>
+                                <span class="text-poke-yellow font-extrabold text-lg">Rp 4.500.000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+        /* Filter Controls Bar */
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-6 mb-8 backdrop-blur-sm" id="filter-section">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                
+                <!-- Rarity Filter Buttons -->
+                <div class="w-full lg:w-auto">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">
+                        <i class="fa-solid fa-layer-group text-poke-yellow mr-1.5"></i> Tingkat Kelangkaan (Rarity)
+                    </label>
+                    <div class="flex flex-wrap gap-2" id="rarityButtons">
+                        <button onclick="filterRarity('Semua')" data-rarity="Semua" class="rarity-btn active bg-poke-yellow text-slate-950 font-extrabold text-xs px-3.5 py-2 rounded-lg transition-all shadow-md">
+                            Semua
+                        </button>
+                        <button onclick="filterRarity('Common')" data-rarity="Common" class="rarity-btn bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs px-3.5 py-2 rounded-lg border border-slate-700 transition-all">
+                            Common
+                        </button>
+                        <button onclick="filterRarity('Uncommon')" data-rarity="Uncommon" class="rarity-btn bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs px-3.5 py-2 rounded-lg border border-slate-700 transition-all">
+                            Uncommon
+                        </button>
+                        <button onclick="filterRarity('Rare Holo')" data-rarity="Rare Holo" class="rarity-btn bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs px-3.5 py-2 rounded-lg border border-slate-700 transition-all">
+                            Rare Holo
+                        </button>
+                        <button onclick="filterRarity('Ultra Rare')" data-rarity="Ultra Rare" class="rarity-btn bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs px-3.5 py-2 rounded-lg border border-slate-700 transition-all">
+                            Ultra Rare (EX/V)
+                        </button>
+                        <button onclick="filterRarity('Secret Rare')" data-rarity="Secret Rare" class="rarity-btn bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs px-3.5 py-2 rounded-lg border border-slate-700 transition-all">
+                            Secret Rare
+                        </button>
+                        <button onclick="filterRarity('Crown Rare')" data-rarity="Crown Rare" class="rarity-btn bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs px-3.5 py-2 rounded-lg border border-slate-700 transition-all">
+                            Crown Rare
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sorting Dropdown -->
+                <div class="min-w-[200px]">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">
+                        <i class="fa-solid fa-arrow-down-wide-short text-poke-yellow mr-1.5"></i> Urutkan Harga
+                    </label>
+                    <select id="sortSelect" onchange="handleSort()" class="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs font-bold rounded-lg p-2.5 focus:outline-none focus:border-poke-yellow">
+                        <option value="default">Default (Rekomendasi)</option>
+                        <option value="price-low">Harga: Termurah → Termahal</option>
+                        <option value="price-high">Harga: Termahal → Termurah</option>
+                        <option value="rarity-high">Kelangkaan Tertinggi</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Catalog Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h2 class="text-2xl font-extrabold text-white flex items-center gap-2">
+                    Katalog Kartu Pokémon <span id="catalogCount" class="text-sm font-semibold bg-slate-800 border border-slate-700 text-poke-yellow px-2.5 py-0.5 rounded-full">(16)</span>
+                </h2>
+                <p id="filterIndicator" class="text-xs text-slate-400 mt-1">Menampilkan semua kartu Pokémon</p>
+            </div>
+        </div>
+
+        <!-- Grid Cards Container -->
+        <div id="cardGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            <!-- Cards JS Rendered Here -->
+        </div>
+
+        <!-- Empty State Message -->
+        <div id="emptyState" class="hidden text-center py-16 bg-slate-900/50 rounded-2xl border border-slate-800">
+            <i class="fa-solid fa-ghost text-5xl text-slate-600 mb-3"></i>
+            <h3 class="text-lg font-bold text-slate-300">Tidak ada kartu yang ditemukan</h3>
+            <p class="text-xs text-slate-500 mt-1">Coba sesuaikan kata kunci pencarian atau filter kelangkaan Anda.</p>
+            <button onclick="resetFilters()" class="mt-4 bg-slate-800 hover:bg-slate-700 text-poke-yellow text-xs font-extrabold px-4 py-2 rounded-lg border border-slate-700">
+                Reset Filter
+            </button>
+        </div>
+
+    </main>
+
+    <!-- SHOPPING CART DRAWER (Slide-Over Panel) -->
+    <div id="cartDrawer" class="fixed inset-0 z-50 overflow-hidden pointer-events-none transition-all duration-300">
+        <!-- Backdrop -->
+        <div id="cartBackdrop" onclick="toggleCartDrawer()" class="absolute inset-0 bg-slate-950/70 opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+
+        <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+            <div id="cartPanel" class="w-screen max-w-md bg-slate-900 border-l border-slate-800 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 pointer-events-auto">
+                
+                <!-- Drawer Header -->
+                <div class="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-cart-shopping text-poke-yellow text-xl"></i>
+                        <h3 class="font-extrabold text-lg text-white">Keranjang Belanja</h3>
+                    </div>
+                    <button onclick="toggleCartDrawer()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition-colors">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Drawer Body / Item List -->
+                <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-5 space-y-4 no-scrollbar">
+                    <!-- Dynamic Cart Items Rendered Here -->
+                </div>
+
+                <!-- Drawer Footer & Checkout Summary -->
+                <div class="p-5 border-t border-slate-800 bg-slate-950 space-y-3">
+                    <div class="flex justify-between text-xs text-slate-400">
+                        <span>Subtotal Produk</span>
+                        <span id="cartSubtotal" class="font-semibold text-slate-200">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between text-xs text-slate-400">
+                        <span>Pajak TCG (11%)</span>
+                        <span id="cartTax" class="font-semibold text-slate-200">Rp 0</span>
+                    </div>
+                    <div class="pt-2 border-t border-slate-800 flex justify-between items-center text-sm font-black">
+                        <span class="text-white">Total Tagihan</span>
+                        <span id="cartTotal" class="text-poke-yellow text-lg">Rp 0</span>
+                    </div>
+
+                    <button onclick="handleCheckout()" class="w-full bg-gradient-to-r from-poke-yellow to-amber-500 hover:from-amber-400 hover:to-amber-600 text-slate-950 font-black py-3.5 rounded-xl text-sm shadow-lg shadow-yellow-500/10 transition-all flex items-center justify-center gap-2 mt-2">
+                        <i class="fa-solid fa-credit-card"></i>
+                        <span>Proses Checkout SEKARANG</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTHENTICATION MODAL (LOG IN / SIGN IN / REGISTER) -->
+    <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl transform scale-95 transition-transform duration-200" id="authModalCard">
+            
+            <!-- Modal Header -->
+            <div class="p-5 bg-slate-950 border-b border-slate-800 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-poke-yellow flex items-center justify-center text-slate-950 font-black text-sm">⚡</div>
+                    <h3 class="font-black text-white text-lg">Akses Akun PokéVault</h3>
+                </div>
+                <button onclick="closeAuthModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Tab Switchers -->
+            <div class="flex border-b border-slate-800 bg-slate-900">
+                <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-3 text-xs font-bold uppercase tracking-wider text-poke-yellow border-b-2 border-poke-yellow transition-all">
+                    Masuk (Log In)
+                </button>
+                <button id="tabRegister" onclick="switchAuthTab('register')" class="flex-1 py-3 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-200 border-b-2 border-transparent transition-all">
+                    Daftar (Sign Up)
+                </button>
+            </div>
+
+            <!-- Modal Forms -->
+            <div class="p-6">
+                <!-- LOGIN FORM -->
+                <form id="formLogin" onsubmit="handleAuthSubmit(event, 'login')" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Email / Username</label>
+                        <input type="text" id="loginUser" required placeholder="contoh: ash.ketchum@pokevault.com" 
+                            class="w-full bg-slate-800 border border-slate-700 text-sm text-slate-100 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-poke-yellow">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Kata Sandi</label>
+                        <input type="password" id="loginPass" required placeholder="••••••••" 
+                            class="w-full bg-slate-800 border border-slate-700 text-sm text-slate-100 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-poke-yellow">
+                    </div>
+                    <button type="submit" class="w-full bg-poke-yellow hover:bg-amber-400 text-slate-950 font-extrabold py-3 rounded-xl text-sm transition-all shadow-md">
+                        Masuk Ke Akun
+                    </button>
+                </form>
+
+                <!-- REGISTER FORM -->
+                <form id="formRegister" onsubmit="handleAuthSubmit(event, 'register')" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Nama Lengkap Trainer</label>
+                        <input type="text" id="regName" required placeholder="contoh: Ash Ketchum" 
+                            class="w-full bg-slate-800 border border-slate-700 text-sm text-slate-100 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-poke-yellow">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Email</label>
+                        <input type="email" id="regEmail" required placeholder="ash@pokevault.com" 
+                            class="w-full bg-slate-800 border border-slate-700 text-sm text-slate-100 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-poke-yellow">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Buat Kata Sandi</label>
+                        <input type="password" id="regPass" required placeholder="••••••••" 
+                            class="w-full bg-slate-800 border border-slate-700 text-sm text-slate-100 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-poke-yellow">
+                    </div>
+                    <button type="submit" class="w-full bg-poke-blue hover:bg-blue-600 text-white font-extrabold py-3 rounded-xl text-sm transition-all shadow-md">
+                        Daftar Akun Baru
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION TOAST CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- FOOTER & IMAGE SOURCE CREDITS -->
+    <footer id="sumber" class="bg-slate-950 border-t border-slate-800/80 mt-16 pt-12 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 mb-10">
+                
+                <!-- Brand Info -->
+                <div class="md:col-span-5">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-8 h-8 rounded-full bg-poke-yellow flex items-center justify-center text-slate-950 font-black">⚡</div>
+                        <span class="text-xl font-extrabold text-white">PokéVault Store</span>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed max-w-sm">
+                        PokéVault Store adalah platform simulasi toko kartu Pokémon digital. Didesain dengan tampilan modern, interaktif, dan penuh transparansi sumber data.
+                    </p>
+                </div>
+
+                <!-- Sumber Gambar & Atribusi (MANDATORY REQUIREMENT) -->
+                <div class="md:col-span-7">
+                    <h4 class="text-xs font-black uppercase tracking-wider text-poke-yellow mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-link"></i> Sumber Gambar & Atribusi Data
+                    </h4>
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 text-xs text-slate-400 space-y-2">
+                        <p>
+                            • Gambar kartu berkualitas tinggi bersumber dari <a href="https://pokemontcg.io/" target="_blank" class="text-poke-yellow underline hover:text-amber-300">Pokémon TCG API</a> dan diindeks melalui <strong>Google Images</strong>.
+                        </p>
+                        <p>
+                            • Seluruh karakter, nama, gambar, dan elemen terkait Pokémon adalah hak cipta terdaftar milik <strong>Nintendo, Game Freak, dan Creatures Inc.</strong>
+                        </p>
+                        <p>
+                            • Proyek ini dibuat untuk keperluan demonstrasi website interaktif dan e-commerce modern.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="pt-6 border-t border-slate-900 text-center text-xs text-slate-500">
+                &copy; 2026 PokéVault Store. Seluruh Hak Cipta Dilindungi. Dibuat dengan HTML5, Tailwind CSS, & JavaScript.
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* ==========================================================================
+           1. DATABASE KARTU POKÉMON (16 KARTU VARIATIF KELANGKAAN)
+           ========================================================================== */
+        const pokemonCards = [
+            {
+                id: 1,
+                name: "Charizard Base Set",
+                type: "Fire",
+                typeColor: "bg-red-600",
+                hp: 120,
+                rarity: "Secret Rare",
+                rarityBadge: "bg-gradient-to-r from-amber-400 to-yellow-600 text-slate-950 font-black",
+                price: 15000000,
+                image: "https://images.pokemontcg.io/base1/4_hires.png",
+                sourceUrl: "https://images.pokemontcg.io/base1/4_hires.png",
+                rarityRank: 5
+            },
+            {
+                id: 2,
+                name: "Pikachu VMAX Rainbow",
+                type: "Electric",
+                typeColor: "bg-amber-500 text-slate-950",
+                hp: 310,
+                rarity: "Secret Rare",
+                rarityBadge: "bg-gradient-to-r from-amber-400 to-yellow-600 text-slate-950 font-black",
+                price: 4500000,
+                image: "https://images.pokemontcg.io/swsh4/188_hires.png",
+                sourceUrl: "https://images.pokemontcg.io/swsh4/188_hires.png",
+                rarityRank: 5
+            },
+            {
+                id: 3,
+                name: "Mewtwo GX",
+                type: "Psychic",
+                typeColor: "bg-purple-600",
+                hp: 180,
+                rarity: "Ultra Rare",
+                rarityBadge: "bg-purple-600 text-white font-bold",
+                price: 1850000,
+                image: "https://images.pokemontcg.io/sm35/31_hires.png",
+                sourceUrl: "https://images.pokemontcg.io/sm35/31_hires.png",
+                rarityRank: 4
+            },
+            {
+                id: 4,
+                name: "Rayquaza VMAX",
+                type: "Dragon",
+                typeColor: "bg-emerald-600",
+                hp: 320,
+                rarity: "Ultra Rare",
+                rarityBadge: "bg-purple-600 text-white font-bold",
+                price: 3200000,
+                image: "https://images.pokemontcg.io/swsh7/111_hires.png",
+                sourceUrl: "https://images.pokemontcg.io/swsh7/111_hires.png",
+                rarityRank: 4
+            },
+            {
+                id: 5,
+                name: "Blastoise Holo Base",
+                type: "Water",
+                typeColor: "bg-blue-600",
+                hp: 100,
+                rarity: "Rare Holo",
+                rarityBadge: "bg-blue-600 text-white font-bold",
+                price: 2500000,
+                image: "https://images.pokemontcg.io/base1/2_hires.png",
+                sourceUrl: "https://images.pokemontcg.io/base1/2_hires.png",
+                rarityRank: 3
+            },
+            {
+                id: 6,
+                name: "Gengar Holo Fossil",
+                type: "Psychic",
+                typeColor: "bg-purple-700",
+                hp: 80,
+                rarity: "Rare Holo",
+                rarityBadge: "bg-blue-600 text-white font-bold",
+                price: 1650000,
+                image: "https://images.pokemontcg.io/base3/5_hires.png",
+                sourceUrl: "https://images.pokemontcg.io/base3/5_hires.png",
+                rarityRank: 3
+            },
+            {
+                id: 7,
+                name: "Giratina VSTAR Gold",
+                type: "Dragon",
+                typeColor: "bg-emerald-700",
+                hp: 280,
+                rarity: "Crown Rare",
+                rarityBadge: "bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 text-slate-950 font-black glow-crown",
+                price: 7900000,
+                image: "https://images.pokemontcg.io/swsh12pt5/GG69_hires.png",
+                sourceUrl: "https://images.pokemontcg.io/swsh12pt5/GG69_hires.png",
+                rarityRank: 6
+            },
+            {
+                id: 8,
+                name: "Arceus VSTAR Gold",
+                type: "Colorless",
+                typeColor: "bg-slate-500",
+                hp: 280,
+                rarity: "Crown Rare",
+                rarityBadge: "bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-600 text-slate-950 font-black glow-crown",
+                price: 6500000,
+                image: "https://images.pokemontcg.io/swsh9/184_hires.png",
+                sourceUrl: "https://images.pokemontcg.io/swsh9/184_hires.png",
+                rarityRank: 6
+            },
+            {
+                id: 9,
+                name: "Charmander Classic",
+                type: "Fire",
+                typeColor: "bg-red-600",
+                hp: 50,
+                rarity: "Common",
+                rarityBadge: "bg-slate-700 text-slate-200 font-bold",
+                price: 45000,
+                image: "https://images.pokemontcg.io/base1/46_hires.png",
+                sourceUrl: "https://images.pokemontcg.io/base1/46_hires.png",
+                rarityRank: 1
+            },
+            {
+                id: 10,
+                name: "Squirtle Classic",
+                type: "Water",
+                typeColor: "bg-blue-600",
+                hp: 40,
+                rarity: "Common",
+                rarityBadge: "bg-slate-700 text-slate-200 font-bold",
+                price: 35000,
+                image: "https://images.pokemontcg.io/base1/63_hires.png",
+                sourceUrl: "https://images.pokemontcg.io/base1/63_hires.png",
+                rarityRank: 1
+            },
+            {
+                id: 11,
+                name: "Bulbasaur Classic",
+                type: "Grass",
+                typeColor: "bg-green-600",
+                hp: 40,
+                rarity: "Common",
+                rarityBadge: "bg-slate-700 text-slate-200 font-bold",
+                price: 35000,
+                image: "https://images.pokemontcg.io/base1/44_hires.png",
+                sourceUrl: "https://images.pokemontcg.io/base1/44_hires.png",
+                rarityRank: 1
+            },
+            {
+                id: 12,
+                name: "Eevee Jungle",
+                type: "Colorless",
+                typeColor: "bg-slate-500",
+                hp: 50,
+                rarity: "Common",
+                rarityBadge: "bg-slate-700 text-slate-200 font-bold",
+                price: 55000,
+                image: "https://images.pokemontcg.io/base2/51_hires.png",
+                sourceUrl: "https://images.pokemontcg.io/base2/51_hires.png",
+                rarityRank: 1
+            },
+            {
+                id: 13,
+                name: "Haunter Base",
+                type: "Psychic",
+                typeColor: "bg-purple-600",
+                hp: 60,
+                rarity: "Uncommon",
+                rarityBadge: "bg-teal-700 text-white font-bold",
+                price: 120000,
+                image: "https://images.pokemontcg.io/base1/29_hires.png",
+                sourceUrl: "https://images.pokemontcg.io/base1/29_hires.png",
+                rarityRank: 2
+            },
+            {
+                id: 14,
+                name: "Dragonair Base",
+                type: "Dragon",
+                typeColor: "bg-emerald-600",
+                hp: 80,
+                rarity: "Uncommon",
+                rarityBadge: "bg-teal-700 text-white font-bold",
+                price: 180000,
+                image: "https://images.pokemontcg.io/base1/18_hires.png",
+                sourceUrl: "https://images.pokemontcg.io/base1/18_hires.png",
+                rarityRank: 2
+            },
+            {
+                id: 15,
+                name: "Kadabra Base",
+                type: "Psychic",
+                typeColor: "bg-purple-600",
+                hp: 60,
+                rarity: "Uncommon",
+                rarityBadge: "bg-teal-700 text-white font-bold",
+                price: 110000,
+                image: "https://images.pokemontcg.io/base1/32_hires.png",
+                sourceUrl: "https://images.pokemontcg.io/base1/32_hires.png",
+                rarityRank: 2
+            },
+            {
+                id: 16,
+                name: "Charizard ex Full Art",
+                type: "Fire",
+                typeColor: "bg-red-600",
+                hp: 330,
+                rarity: "Ultra Rare",
+                rarityBadge: "bg-purple-600 text-white font-bold",
+                price: 4200000,
+                image: "https://images.pokemontcg.io/sv3/223_hires.png",
+                sourceUrl: "https://images.pokemontcg.io/sv3/223_hires.png",
+                rarityRank: 4
+            }
+        ];
+
+        /* ==========================================================================
+           2. APP STATE MANAGEMENT
+           ========================================================================== */
+        let cart = [];
+        let currentUser = null;
+        let selectedRarity = "Semua";
+        let searchQuery = "";
+        let currentSort = "default";
+
+        /* Format Currency IDR */
+        function formatIDR(amount) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(amount);
+        }
+
+        /* ==========================================================================
+           3. CARD RENDERING & PRECISION FILTERING LOGIC
+           ========================================================================== */
+        function renderCards() {
+            const grid = document.getElementById('cardGrid');
+            const emptyState = document.getElementById('emptyState');
+            const filterIndicator = document.getElementById('filterIndicator');
+            
+            // Precise Filter logic
+            let filtered = pokemonCards.filter(card => {
+                const matchesRarity = (selectedRarity === "Semua") || (card.rarity === selectedRarity);
+                const matchesSearch = card.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                      card.type.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesRarity && matchesSearch;
+            });
+
+            // Sorting logic
+            if (currentSort === "price-low") {
+                filtered.sort((a, b) => a.price - b.price);
+            } else if (currentSort === "price-high") {
+                filtered.sort((a, b) => b.price - a.price);
+            } else if (currentSort === "rarity-high") {
+                filtered.sort((a, b) => b.rarityRank - a.rarityRank);
+            }
+
+            document.getElementById('catalogCount').innerText = `(${filtered.length})`;
+
+            // Status indicator update
+            if (selectedRarity === "Semua" && !searchQuery) {
+                filterIndicator.innerText = `Menampilkan semua (${filtered.length}) kartu Pokémon`;
+            } else {
+                filterIndicator.innerText = `Menampilkan ${filtered.length} kartu untuk filter [Kelangkaan: ${selectedRarity}] ${searchQuery ? `& [Pencarian: "${searchQuery}"]` : ''}`;
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            grid.innerHTML = filtered.map(card => {
+                const isCrownOrSecret = card.rarity === 'Secret Rare' || card.rarity === 'Crown Rare';
+                const glowClass = isCrownOrSecret ? 'hover:glow-rare border-amber-500/40' : 'border-slate-800';
+
+                return `
+                    <div class="card-foil bg-slate-900 border ${glowClass} rounded-2xl p-4 flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 group shadow-xl">
+                        <div>
+                            <!-- Header Status Card -->
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-[10px] px-2.5 py-1 rounded-full ${card.rarityBadge} uppercase tracking-wider">
+                                    ${card.rarity}
+                                </span>
+                                <span class="text-xs font-black text-slate-400 flex items-center gap-1">
+                                    <span class="w-2 h-2 rounded-full ${card.typeColor} inline-block"></span> HP ${card.hp}
+                                </span>
+                            </div>
+
+                            <!-- Card Image -->
+                            <div class="relative overflow-hidden rounded-xl bg-slate-950 p-2 mb-3 border border-slate-800 group-hover:border-slate-700 transition-colors">
+                                <img src="${card.image}" alt="${card.name}" 
+                                     loading="lazy" 
+                                     class="w-full h-auto object-contain rounded-lg transform group-hover:scale-105 transition-transform duration-300"
+                                     onerror="this.src='https://placehold.co/400x550/1e293b/ffcb05?text=Kartu+Pokemon'">
+                            </div>
+
+                            <!-- Info Kartu -->
+                            <h3 class="font-black text-slate-100 text-base group-hover:text-poke-yellow transition-colors truncate">
+                                ${card.name}
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-0.5">Tipe: <span class="font-bold text-slate-300">${card.type}</span></p>
+
+                            <!-- Sumber Gambar (Credit Requirement) -->
+                            <a href="${card.sourceUrl}" target="_blank" class="inline-flex items-center gap-1 text-[10px] text-slate-500 hover:text-poke-yellow mt-2 transition-colors">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i> Sumber Gambar TCG API
+                            </a>
+                        </div>
+
+                        <!-- Price & Action Button -->
+                        <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] text-slate-500 block uppercase font-bold">Harga</span>
+                                <span class="text-poke-yellow font-black text-base">${formatIDR(card.price)}</span>
+                            </div>
+                            <button onclick="addToCart(${card.id})" class="bg-slate-800 hover:bg-poke-yellow hover:text-slate-950 text-slate-200 p-2.5 rounded-xl border border-slate-700 hover:border-poke-yellow transition-all flex items-center justify-center shadow-md active:scale-95" title="Tambah Ke Keranjang">
+                                <i class="fa-solid fa-cart-plus text-base"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        /* Filter Kelangkaan Event Fix */
+        function filterRarity(rarity) {
+            selectedRarity = rarity;
+            
+            // Update active button state UI accurately
+            const buttons = document.querySelectorAll('.rarity-btn');
+            buttons.forEach(btn => {
+                const btnRarity = btn.getAttribute('data-rarity');
+                if(btnRarity === rarity) {
+                    btn.className = "rarity-btn active bg-poke-yellow text-slate-950 font-extrabold text-xs px-3.5 py-2 rounded-lg transition-all shadow-md";
+                } else {
+                    btn.className = "rarity-btn bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs px-3.5 py-2 rounded-lg border border-slate-700 transition-all";
+                }
+            });
+
+            renderCards();
+        }
+
+        /* Handle Search Input */
+        function handleSearch() {
+            searchQuery = document.getElementById('searchInput').value;
+            renderCards();
+        }
+        function handleSearchMobile() {
+            searchQuery = document.getElementById('searchInputMobile').value;
+            renderCards();
+        }
+
+        /* Handle Sort */
+        function handleSort() {
+            currentSort = document.getElementById('sortSelect').value;
+            renderCards();
+        }
+
+        /* Reset Filter */
+        function resetFilters() {
+            selectedRarity = "Semua";
+            searchQuery = "";
+            currentSort = "default";
+            document.getElementById('searchInput').value = "";
+            document.getElementById('searchInputMobile').value = "";
+            document.getElementById('sortSelect').value = "default";
+            filterRarity('Semua');
+        }
+
+
+        /* ==========================================================================
+           4. SHOPPING CART SYSTEM
+           ========================================================================== */
+        function addToCart(cardId) {
+            const card = pokemonCards.find(c => c.id === cardId);
+            if (!card) return;
+
+            const existingIndex = cart.findIndex(item => item.id === cardId);
+            if (existingIndex > -1) {
+                cart[existingIndex].qty += 1;
+            } else {
+                cart.push({ ...card, qty: 1 });
+            }
+
+            updateCartUI();
+            showToast(`"${card.name}" ditambahkan ke keranjang!`, 'success');
+        }
+
+        function updateQuantity(cardId, change) {
+            const index = cart.findIndex(item => item.id === cardId);
+            if (index > -1) {
+                cart[index].qty += change;
+                if (cart[index].qty <= 0) {
+                    cart.splice(index, 1);
+                }
+            }
+            updateCartUI();
+        }
+
+        function removeFromCart(cardId) {
+            cart = cart.filter(item => item.id !== cardId);
+            updateCartUI();
+            showToast('Kartu dihapus dari keranjang.', 'info');
+        }
+
+        function updateCartUI() {
+            const badge = document.getElementById('cartBadge');
+            const container = document.getElementById('cartItemsContainer');
+            
+            // Total items count
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            badge.innerText = totalItems;
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-16 text-slate-500">
+                        <i class="fa-solid fa-basket-shopping text-4xl mb-3 text-slate-700"></i>
+                        <p class="text-sm font-semibold">Keranjang Anda masih kosong.</p>
+                        <p class="text-xs mt-1 text-slate-600">Jelajahi katalog dan pesan kartu impian Anda!</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = cart.map(item => `
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 flex items-center gap-3">
+                        <img src="${item.image}" alt="${item.name}" class="w-14 h-20 object-contain bg-slate-900 rounded-lg p-1 border border-slate-800">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-white text-sm truncate">${item.name}</h4>
+                            <p class="text-xs text-poke-yellow font-extrabold mt-0.5">${formatIDR(item.price)}</p>
+                            
+                            <!-- Quantity Controller -->
+                            <div class="flex items-center gap-2 mt-2">
+                                <button onclick="updateQuantity(${item.id}, -1)" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded flex items-center justify-center text-xs font-bold">
+                                    <i class="fa-solid fa-minus"></i>
+                                </button>
+                                <span class="text-xs font-bold text-white px-2">${item.qty}</span>
+                                <button onclick="updateQuantity(${item.id}, 1)" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded flex items-center justify-center text-xs font-bold">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})" class="text-slate-500 hover:text-poke-red p-2" title="Hapus">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            // Financial Calculations
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const tax = subtotal * 0.11; // Tax 11%
+            const total = subtotal + tax;
+
+            document.getElementById('cartSubtotal').innerText = formatIDR(subtotal);
+            document.getElementById('cartTax').innerText = formatIDR(tax);
+            document.getElementById('cartTotal').innerText = formatIDR(total);
+        }
+
+        function toggleCartDrawer() {
+            const drawer = document.getElementById('cartDrawer');
+            const backdrop = document.getElementById('cartBackdrop');
+            const panel = document.getElementById('cartPanel');
+
+            if (drawer.classList.contains('pointer-events-none')) {
+                // Open
+                drawer.classList.remove('pointer-events-none');
+                backdrop.classList.remove('opacity-0', 'pointer-events-none');
+                backdrop.classList.add('opacity-100');
+                panel.classList.remove('translate-x-full');
+            } else {
+                // Close
+                backdrop.classList.remove('opacity-100');
+                backdrop.classList.add('opacity-0', 'pointer-events-none');
+                panel.classList.add('translate-x-full');
+                setTimeout(() => {
+                    drawer.classList.add('pointer-events-none');
+                }, 300);
+            }
+        }
+
+        function handleCheckout() {
+            if (cart.length === 0) {
+                showToast('Keranjang Anda masih kosong!', 'error');
+                return;
+            }
+
+            if (!currentUser) {
+                showToast('Silakan Sign In terlebih dahulu sebelum Checkout!', 'error');
+                openAuthModal('login');
+                return;
+            }
+
+            showToast('Pesanan Berhasil Diproses! Terima kasih telah berbelanja di PokéVault.', 'success');
+            cart = [];
+            updateCartUI();
+            toggleCartDrawer();
+        }
+
+
+        /* ==========================================================================
+           5. AUTHENTICATION SYSTEM (SIGN IN / REGISTER MODAL)
+           ========================================================================== */
+        function openAuthModal(mode = 'login') {
+            const modal = document.getElementById('authModal');
+            const modalCard = document.getElementById('authModalCard');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalCard.classList.remove('scale-95');
+                modalCard.classList.add('scale-100');
+            }, 10);
+            switchAuthTab(mode);
+        }
+
+        function closeAuthModal() {
+            const modal = document.getElementById('authModal');
+            const modalCard = document.getElementById('authModalCard');
+            modal.classList.add('opacity-0');
+            modalCard.classList.remove('scale-100');
+            modalCard.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
+        function switchAuthTab(mode) {
+            const tabLogin = document.getElementById('tabLogin');
+            const tabRegister = document.getElementById('tabRegister');
+            const formLogin = document.getElementById('formLogin');
+            const formRegister = document.getElementById('formRegister');
+
+            if (mode === 'login') {
+                tabLogin.className = "flex-1 py-3 text-xs font-bold uppercase tracking-wider text-poke-yellow border-b-2 border-poke-yellow transition-all";
+                tabRegister.className = "flex-1 py-3 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-200 border-b-2 border-transparent transition-all";
+                formLogin.classList.remove('hidden');
+                formRegister.classList.add('hidden');
+            } else {
+                tabRegister.className = "flex-1 py-3 text-xs font-bold uppercase tracking-wider text-poke-yellow border-b-2 border-poke-yellow transition-all";
+                tabLogin.className = "flex-1 py-3 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-200 border-b-2 border-transparent transition-all";
+                formRegister.classList.remove('hidden');
+                formLogin.classList.add('hidden');
+            }
+        }
+
+        function handleAuthSubmit(e, mode) {
+            e.preventDefault();
+            const container = document.getElementById('authContainer');
+
+            if (mode === 'login') {
+                const userVal = document.getElementById('loginUser').value || "Ash Ketchum";
+                currentUser = { name: userVal.split('@')[0], email: userVal };
+                showToast(`Selamat datang kembali, ${currentUser.name}!`, 'success');
+            } else {
+                const regName = document.getElementById('regName').value || "Trainer Baru";
+                currentUser = { name: regName };
+                showToast(`Akun berhasil dibuat! Selamat datang, ${currentUser.name}.`, 'success');
+            }
+
+            // Update Navbar User Profile
+            container.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 bg-slate-800 border border-slate-700 pl-2 pr-3 py-1.5 rounded-full">
+                        <div class="w-7 h-7 rounded-full bg-poke-yellow text-slate-950 font-black text-xs flex items-center justify-center">
+                            ${currentUser.name.charAt(0).toUpperCase()}
+                        </div>
+                        <span class="text-xs font-extrabold text-slate-200 max-w-[100px] truncate">${currentUser.name}</span>
+                    </div>
+                    <button onclick="handleLogout()" class="text-slate-400 hover:text-poke-red p-1.5 text-xs font-bold" title="Keluar">
+                        <i class="fa-solid fa-right-from-bracket text-base"></i>
+                    </button>
+                </div>
+            `;
+
+            closeAuthModal();
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            document.getElementById('authContainer').innerHTML = `
+                <button onclick="openAuthModal('login')" class="bg-gradient-to-r from-poke-yellow to-amber-500 hover:from-amber-400 hover:to-amber-600 text-slate-950 font-extrabold text-xs sm:text-sm px-4 py-2.5 rounded-full shadow-lg hover:shadow-yellow-500/20 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-user-check"></i>
+                    <span>Masuk / Daftar</span>
+                </button>
+            `;
+            showToast('Anda telah keluar dari akun.', 'info');
+        }
+
+
+        /* ==========================================================================
+           6. TOAST NOTIFICATION UTILITY
+           ========================================================================== */
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+
+            let icon = 'fa-circle-info text-blue-400';
+            let borderColor = 'border-slate-700';
+
+            if (type === 'success') {
+                icon = 'fa-circle-check text-emerald-400';
+                borderColor = 'border-emerald-500/40';
+            } else if (type === 'error') {
+                icon = 'fa-circle-exclamation text-poke-red';
+                borderColor = 'border-red-500/40';
+            }
+
+            toast.className = `bg-slate-900 border ${borderColor} text-slate-100 text-xs font-bold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 transform translate-y-5 opacity-0 transition-all duration-300 pointer-events-auto`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i><span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-5', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+
+        /* ==========================================================================
+           7. INITIALIZATION ON PAGE LOAD
+           ========================================================================== */
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCards();
+            updateCartUI();
+        });
+    </script>
+</body>
+</html>
